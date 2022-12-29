@@ -1,61 +1,49 @@
 <?php
 session_start();
-include 'koneksi.php';
+include 'connection.php';
 
 if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
-
-    $query = mysqli_query($koneksi, "SELECT * FROM tbuser where username = '$username'");
-
-
+    $query = mysqli_query($connection, "SELECT * FROM user_table where username = '$username'");
     if (mysqli_num_rows($query) == 1) {
-        $levelakun = mysqli_fetch_assoc($query);
-        $id = $levelakun['id'];
+        $role_id = mysqli_fetch_assoc($query);
+        $id = $role_id['id'];
         session_start();
-        if (password_verify($password, $levelakun['password'])) {
-            if ($levelakun['levelakun'] == "admin") {
-                // buat session login dan username
+        if (password_verify($password, $role_id['password'])) {
+            if ($role_id['role_id'] == "master") {
                 $_SESSION['username'] = $username;
                 $_SESSION['id'] = $id;
-                $_SESSION['levelakun'] = $password;
-                // alihkan ke halaman dashboard admin
-                header("location:dashboard_admin.php");
-            } else if ($levelakun['levelakun'] == "schooladmin") {
-                // buat session login dan username
+                $_SESSION['role_id'] = $password;
+
+                header("location:schoolhelp_dashboard.php");
+            } else if ($role_id['role_id'] == "schooladmin") {
                 $_SESSION['username'] = $username;
                 $_SESSION['id'] = $id;
-                $_SESSION['levelakun'] = $password;
-                // alihkan ke halaman dashboard tester
-                header("location:dashboard_tester.php");
-            } else if ($levelakun['levelakun'] == "volunteer") {
-                // buat session login dan username
+                $_SESSION['role_id'] = $password;
+
+                header("location:schooladm_dashboard.php");
+            } else if ($role_id['role_id'] == "volunteer") {
                 $_SESSION['username'] = $username;
                 $_SESSION['id'] = $id;
-                $_SESSION['levelakun'] = $password;
-                // alihkan ke halaman dashboard patient
-                header("location:dashboard_patient.php");
+                $_SESSION['role_id'] = $password;
+
+                header("location:volunteer_dashboard.php");
             }
         } else {
-
-            echo "<script>alert('Incorrect Username or Password');
-                location.href='login.php';
-                </script>";
+            echo "<script>alert('SALAH');
+            location.href='login.php';
+            </script>";
         }
     } else {
-        echo "<script>alert('Username does not exist!');
+        echo "<script>alert('Username doesn't exist');
                 location.href='login.php';
                 </script>";
     }
 }
-/*
-    if(isset($_GET['pesan'])){
-		if($_GET['pesan']=="gagal"){
-			echo "<div class='alert'>Username dan Password tidak sesuai !</div>";
-		}
-	}*/
 
 ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -96,7 +84,7 @@ if (isset($_POST['submit'])) {
                     </div>
                     <br>
                     <p> Join as volunteer now </p>
-                    <a href="regist_volunteer.php">Register now</p>
+                    <a href="volunteer_register.php">Register now</p>
                 </form>
             </div>
             <div class="col-md-6 bg-primary p-2">
